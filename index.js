@@ -113,23 +113,5 @@ bot.on("message", async msg => {
 
     }
   }
-  if (cmd === "seticon") {
-
-    if (!args) {
-
-      msg.channel.send("Please put an image link to set the guild icon as.");
-
-    } else {
-
-      guild.setIcon(args[0]);
-
-      msg.channel.send("Successfully set the guild icon!");
-
-    }
-
-  }
-  if (cmd === "stop") {
-    process.exit();
-  }
 });
 bot.login("noToken.forYou.butNiceTry");
