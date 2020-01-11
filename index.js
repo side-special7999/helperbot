@@ -26,8 +26,8 @@ bot.on("message", async msg => {
     const cmd = args.shift().toLowerCase(); // finds the actual command
 
     const guild = msg.guild; // shortens the code a LOOOT.
-    
-    const cha = msg.channel // same as above!
+
+    const cha = msg.channel; // same as above!
 
     if (cmd === "setup") {
 
@@ -126,8 +126,8 @@ bot.on("message", async msg => {
         process.exit();
     }
     if (cmd === "name") {
-        guild.setName(args[0]);
-        cha.send("Successfully set the guild's name to " + args[0] = "!");
+        guild.setName(args.join(" "));
+        cha.send("Successfully set the guild's name to " + args.join(" ") + "!");
     }
     if (cmd === "check") {
         if (guild.roles.find(r => r.name === "Admin")) {
@@ -165,8 +165,15 @@ bot.on("message", async msg => {
             .setDescription("Server Helper is a bot designed to set up the most basic parts of a new server.")
             .addField("*setup", "Sets up basic features of your new server.")
             .addField("*name", "Sets your server's name.")
-            .addField("*check", "Checks if your server has what every server needs.");
-        cha.send(help):
+            .addField("*check", "Checks if your server has what every server needs.")
+            .addField("*invite", "Get a permanent OAuth2 link for the bot, as well as the official server.");
+        cha.send(help);
+    }
+    if (cmd === "invite") {
+        const inv = new Discord.RichEmbed()
+            .setColor('#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6))
+            .setDescription("You may add the bot to your own new server here: https://discordapp.com/api/oauth2/authorize?client_id=665029968979558409&permissions=8&scope=bot\n\nJoin the official server here (WIP): https://discord.gg/aTevuAW");
+        cha.send(inv);
     }
 });
-bot.login("no token for you :)");
+bot.login("no token for you ;)");
