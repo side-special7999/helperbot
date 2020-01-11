@@ -166,7 +166,9 @@ bot.on("message", async msg => {
             .addField("sh*setup", "Sets up basic features of your new server.")
             .addField("sh*name", "Sets your server's name.")
             .addField("sh*check", "Checks if your server has what every server needs.")
-            .addField("sh*invite", "Get a permanent OAuth2 link for the bot, as well as the official server.");
+            .addField("sh*invite", "Get a permanent OAuth2 link for the bot, as well as the official server.")
+            .addField("sh*bot", "Check out some pages of info for my bot.")
+            .addField("sh*credits", "My thanks to all who are of help to me during my development. Also, come meet me in those places!");
         cha.send(help);
     }
     if (cmd === "invite") {
@@ -175,8 +177,20 @@ bot.on("message", async msg => {
             .setDescription("You may add the bot to your own new server here: https://discordapp.com/api/oauth2/authorize?client_id=665029968979558409&permissions=8&scope=bot\n\nJoin the official server here (WIP): https://discord.gg/aTevuAW");
         cha.send(inv);
     }
-    if(cmd==="emitjoin" && msg.author.id === "577041100016189441") { // ignore this pls
+    if (cmd === "bot") {
+        const bot2 = new Discord.RichEmbed()
+            .setColor('#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6))
+            .setDescription("Check it out on discord bots: https://discord.bots.gg/bots/665029968979558409\n\nCheck out the repository: https://github.com/side-special7999/helperbot");
+        cha.send(bot2);
+    }
+    if (cmd === "credits") {
+        const cred = new Discord.RichEmbed()
+            .setColor('#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6))
+            .setDescription("Thanks to discord bots for helping me test: https://discord.gg/0cDvIgU2voWn4BaD\n\nThanks to the API experts for helping with API issues: https://discord.gg/discord-api\n\nBIG thanks to discord.js devs and docs: https://discord.gg/bRCvFy9 and https://discord.js.org");
+        cha.send(cred);
+    }
+    if (cmd === "emitjoin" && msg.author.id === "577041100016189441") { // ignore this pls
         bot.emit("guildCreate", msg.guild);
     }
 });
-bot.login("no token for you :)");
+bot.login("");
