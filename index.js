@@ -4,14 +4,14 @@ const bot = new Discord.Client();
 bot.on("ready", () => {
     bot.user.setPresence({
         game: {
-            name: 'help => *help'
+            name: 'sh*help, status: 9'
         },
         status: 'idle'
     });
 });
 bot.on("guildCreate", async gc => {
 
-    gc.channels.find(r => r.name === "general").send("Hello! I can set up your server for you. Just use *setup to get started!");
+    gc.channels.find(r => r.name === "general").send("Hello! I can set up your server for you. Just use sh*help to get started!");
 
 });
 
@@ -19,9 +19,9 @@ bot.on("message", async msg => {
 
     if (msg.author.bot) return; // any message from a bot is ignored
 
-    if (msg.content.indexOf("*") !== 0) return; // checks to make sure the prefix (derived from config.json) is present in the message
+    if (msg.content.indexOf("sh*") !== 0) return; // checks to make sure the prefix (derived from config.json) is present in the message
 
-    const args = msg.content.slice(1).trim().split(/ +/g); // trims the args
+    const args = msg.content.slice(3).trim().split(/ +/g); // trims the args
 
     const cmd = args.shift().toLowerCase(); // finds the actual command
 
@@ -163,10 +163,10 @@ bot.on("message", async msg => {
             .setColor('#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6))
             .setTitle("Helper Bot Commands")
             .setDescription("Server Helper is a bot designed to set up the most basic parts of a new server.")
-            .addField("*setup", "Sets up basic features of your new server.")
-            .addField("*name", "Sets your server's name.")
-            .addField("*check", "Checks if your server has what every server needs.")
-            .addField("*invite", "Get a permanent OAuth2 link for the bot, as well as the official server.");
+            .addField("sh*setup", "Sets up basic features of your new server.")
+            .addField("sh*name", "Sets your server's name.")
+            .addField("sh*check", "Checks if your server has what every server needs.")
+            .addField("sh*invite", "Get a permanent OAuth2 link for the bot, as well as the official server.");
         cha.send(help);
     }
     if (cmd === "invite") {
@@ -175,5 +175,8 @@ bot.on("message", async msg => {
             .setDescription("You may add the bot to your own new server here: https://discordapp.com/api/oauth2/authorize?client_id=665029968979558409&permissions=8&scope=bot\n\nJoin the official server here (WIP): https://discord.gg/aTevuAW");
         cha.send(inv);
     }
+    if(cmd==="emitjoin" && msg.author.id === "577041100016189441") { // ignore this pls
+        bot.emit("guildCreate", msg.guild);
+    }
 });
-bot.login("no token for you ;)");
+bot.login("no token for you :)");
