@@ -1,117 +1,172 @@
 const Discord = require("discord.js");
 
 const bot = new Discord.Client();
-
+bot.on("ready", () => {
+    bot.user.setPresence({
+        game: {
+            name: 'help => *help'
+        },
+        status: 'idle'
+    });
+});
 bot.on("guildCreate", async gc => {
 
-  gc.channels.find(r => r.name === "general").send("Hello! I can set up your server for you. Just use *setup to get started!");
+    gc.channels.find(r => r.name === "general").send("Hello! I can set up your server for you. Just use *setup to get started!");
 
 });
 
 bot.on("message", async msg => {
 
-  if (msg.author.bot) return; // any message from a bot is ignored
+    if (msg.author.bot) return; // any message from a bot is ignored
 
-  if (msg.content.indexOf("*") !== 0) return; // checks to make sure the prefix (derived from config.json) is present in the message
+    if (msg.content.indexOf("*") !== 0) return; // checks to make sure the prefix (derived from config.json) is present in the message
 
-  const args = msg.content.slice(1).trim().split(/ +/g); // trims the args
+    const args = msg.content.slice(1).trim().split(/ +/g); // trims the args
 
-  const cmd = args.shift().toLowerCase(); // finds the actual command
+    const cmd = args.shift().toLowerCase(); // finds the actual command
 
-  const guild = msg.guild;
+    const guild = msg.guild; // shortens the code a LOOOT.
+    
+    const cha = msg.channel // same as above!
 
-  if (cmd === "setup") {
+    if (cmd === "setup") {
 
-    if (guild.afkChannel) {
+        if (guild.afkChannel) {
 
-      msg.channel.send("There is already an AFK channel set.");
+            cha.send("There is already an AFK channel set.");
 
-    } else {
+        } else {
 
-      if (guild.channels.find(ct => ct.name === "Voice Channels" && ct.type === "category")) {
+            if (guild.channels.find(ct => ct.name === "Voice Channels" && ct.type === "category")) {
 
-        guild.createChannel("AFK", {
+                guild.createChannel("AFK", {
 
-          type: "voice"
+                    type: "voice"
 
-        }).then(function (nc) {
+                }).then(function(nc) {
 
-          nc.setParent(guild.channels.find(ct => ct.name === "Voice Channels"));
+                    nc.setParent(guild.channels.find(ct => ct.name === "Voice Channels"));
 
-          guild.setAFKChannel(nc);
+                    guild.setAFKChannel(nc);
 
-        });
+                });
 
-        msg.channel.send("Successfully created an AFK Channel!");
+                cha.send("Successfully created an AFK Channel!");
 
-      } else {
+            } else {
 
-        guild.createChannel("Voice Channels", {
+                guild.createChannel("Voice Channels", {
 
-          type: "category"
+                    type: "category"
 
-        });
+                });
 
-        guild.createChannel("AFK", {
+                guild.createChannel("AFK", {
 
-          type: "voice"
+                    type: "voice"
 
-        }).then(function (nc) {
+                }).then(function(nc) {
 
-          nc.setParent(guild.channels.find(ct => ct.name === "Voice Channels"));
+                    nc.setParent(guild.channels.find(ct => ct.name === "Voice Channels"));
 
-          guild.setAFKChannel(nc);
+                    guild.setAFKChannel(nc);
 
-        });
+                });
 
-        msg.channel.send("Successfully created a voice category and an AFK Channel!");
+                cha.send("Successfully created a voice category and an AFK Channel!");
 
-      }
+            }
 
+        }
+        if (guild.roles.find(r => r.name === "Admin")) {
+            cha.send("There is already an admin role.");
+        } else {
+            guild.createRole({
+                name: "Admin",
+                permissions: ["ADMINISTRATOR"]
+            });
+
+            cha.send("Successfully created an admin role!");
+        }
+        if (guild.defaultMessageNotifications === 'MENTIONS') {
+            cha.send("Default notification settings are already on mentions only.");
+        } else {
+            msg.guild.setDefaultMessageNotifications('MENTIONS');
+            cha.send("Set default notifications to mentions only.");
+
+        }
+
+        if (guild.channels.find(ch => ch.name === "welcome")) {
+            cha.send("There is already a welcome channel.");
+        } else {
+            guild.createChannel('welcome', {
+                type: 'text',
+                permissionOverwrites: [{
+                    id: msg.guild.id,
+                    deny: ['SEND_MESSAGES'],
+                }, ],
+            }).then(function(ch) {
+
+                ch.createInvite({
+                    maxAge: 0,
+                    maxUses: 0,
+                }, ).then(function(inv) {
+
+                    ch.send("Permanent invite link: " + inv.url);
+
+                });
+
+            });
+
+            cha.send("Set up a welcome channel and a permanent invite link.");
+
+        }
     }
-    if (guild.roles.find(r => r.name === "Admin")) {
-      msg.channel.send("There is already an admin role.");
-    } else {
-      guild.createRole({
-        name: "Admin",
-        permissions: ["ADMINISTRATOR"]
-      });
-
-      msg.channel.send("Successfully created an admin role!");
+    if (cmd === "stop" && msg.author.id === "577041100016189441") { // this is my id. only i can stop the bot :)
+        process.exit();
     }
-    if (guild.defaultMessageNotifications === 'MENTIONS') {
-      msg.channel.send("Default notification settings are already on mentions only.");
-    } else {
-      msg.guild.setDefaultMessageNotifications('MENTIONS');
-      msg.channel.send("Set default notifications to mentions only.");
-
+    if (cmd === "name") {
+        guild.setName(args[0]);
+        cha.send("Successfully set the guild's name to " + args[0] = "!");
     }
+    if (cmd === "check") {
+        if (guild.roles.find(r => r.name === "Admin")) {
+            cha.send("There is already an admin role.");
+        } else {
+            cha.send("Could not find any admin role.");
+        }
+        if (guild.afkChannel) {
 
-    if (guild.channels.find(ch => ch.name === "welcome")) {
-      msg.channel.send("There is already a welcome channel.");
-    } else {
-      guild.createChannel('welcome', {
-        type: 'text',
-        permissionOverwrites: [{
-          id: msg.guild.id,
-          deny: ['SEND_MESSAGES'],
-        }, ],
-      }).then(function (ch) {
+            cha.send("There is already an AFK channel set.");
 
-        ch.createInvite({
-          maxAge: 0,
-          maxUses: 0,
-        }, ).then(function (inv) {
-
-          ch.send("Permanent invite link: " + inv.url);
-
-        });
-
-      });
-
-      msg.channel.send("Set up a welcome channel and a permanent invite link.");
-
+        } else {
+            cha.send("There is no AFK channel set.");
+        }
+        if (guild.channels.find(ct => ct.name === "Voice Channels" && ct.type === "category")) {
+            cha.send("There is already a VC category set.");
+        } else {
+            cha.send("No VC category exists.");
+        }
+        if (guild.defaultMessageNotifications === 'MENTIONS') {
+            cha.send("Default notification settings are already on mentions only.");
+        } else {
+            cha.send("Notification settings are not set on mentions only. NEVER SET IT TO ALL MESSAGES! EVER!");
+        }
+        if (guild.channels.find(ch => ch.name === "welcome")) {
+            cha.send("There is already a welcome channel.");
+        } else {
+            cha.send("No welcome channel exists.");
+        }
     }
-  }
+    if (cmd === "help") {
+        const help = new Discord.RichEmbed()
+            .setColor('#' + (0x1000000 + (Math.random()) * 0xffffff).toString(16).substr(1, 6))
+            .setTitle("Helper Bot Commands")
+            .setDescription("Server Helper is a bot designed to set up the most basic parts of a new server.")
+            .addField("*setup", "Sets up basic features of your new server.")
+            .addField("*name", "Sets your server's name.")
+            .addField("*check", "Checks if your server has what every server needs.");
+        cha.send(help):
+    }
 });
-bot.login("noToken.forYou.butNiceTry");
+bot.login("no token for you :)");
