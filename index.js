@@ -30,23 +30,23 @@ bot.on("message", async msg => {
 
         if (cmd === "setup") {
 
-            if (guild.afkChannel) {
+            if (guild.afkChannel) { // checks for an afk channel
 
                 send += ("There is already an AFK channel set.");
 
             } else {
 
-                if (guild.channels.find(ct => ct.name === "Voice Channels" && ct.type === "category")) {
+                if (guild.channels.find(ct => ct.name === "Voice Channels" && ct.type === "category")) { // if there is a specific VC category...
 
-                    guild.createChannel("AFK", {
+                    guild.createChannel("AFK", { // create an AFK channel...
 
-                        type: "voice"
+                        type: "voice" // make it voice...
 
                     }).then(function(nc) {
 
-                        nc.setParent(guild.channels.find(ct => ct.name === "Voice Channels"));
+                        nc.setParent(guild.channels.find(ct => ct.name === "Voice Channels")); // put it in the VC category...
 
-                        guild.setAFKChannel(nc);
+                        guild.setAFKChannel(nc); // and set the guild AFK channel to it!
 
                     });
 
@@ -54,22 +54,23 @@ bot.on("message", async msg => {
 
                 } else {
 
-                    guild.createChannel("Voice Channels", {
+                    guild.createChannel("Voice Channels", { // if there isn't a VC category, create it.
 
-                        type: "category"
+                        type: "category" // same as before!
 
-                    });
-
-                    guild.createChannel("AFK", {
+                    }).then(function(ca) { // shortens code a bit
+                        
+                        guild.createChannel("AFK", {
 
                         type: "voice"
 
                     }).then(function(nc) {
 
-                        nc.setParent(guild.channels.find(ct => ct.name === "Voice Channels"));
+                        nc.setParent(ca);
 
                         guild.setAFKChannel(nc);
 
+                    });
                     });
 
                     send += ("Successfully created a voice category and an AFK Channel!");
@@ -77,20 +78,20 @@ bot.on("message", async msg => {
                 }
 
             }
-            let guildRoles = guild.roles.array();
+            let guildRoles = guild.roles.array(); // all the roles in the guild
             let checkAdmin = function() {
-                for (let i = 0; i < guildRoles.length; i++) {
+                for (let i = 0; i < guildRoles.length; i++) { // iterate through all roles
                     if (guildRoles[i].hasPermission('ADMINISTRATOR') && guildRoles[i].name !== "Server Helper") {
                         return true;
                     } else {
-                        console.log();
+                        console.log(); // just to return SOMETHING.
                     }
                 }
             };
             if (checkAdmin()) {
                 send += ("\nThere is already an admin role.");
             } else {
-                guild.createRole({
+                guild.createRole({ // admin role!
                     name: "Admin",
                     permissions: ["ADMINISTRATOR"]
                 });
@@ -107,7 +108,7 @@ bot.on("message", async msg => {
             if (guild.channels.find(ch => ch.name === "welcome")) {
                 send += ("\nThere is already a welcome channel.");
             } else {
-                guild.createChannel('welcome', {
+                guild.createChannel('welcome', { // No one without admin perms or the owner can send anything in it
                     type: 'text',
                     permissionOverwrites: [{
                         id: msg.guild.id,
@@ -116,8 +117,8 @@ bot.on("message", async msg => {
                 }).then(function(ch) {
 
                     ch.createInvite({
-                        maxAge: 0,
-                        maxUses: 0
+                        maxAge: 0, // forever
+                        maxUses: 0 // infinite
                     }).then(function(inv) {
 
                         ch.send("Permanent invite link: " + inv.url);
@@ -129,12 +130,12 @@ bot.on("message", async msg => {
                 send += ("\nSet up a welcome channel and a permanent invite link.");
             }
             if (guild.defaultRole.hasPermission('MENTION_EVERYONE')) {
-                guild.defaultRole.setPermissions(104193089);
+                guild.defaultRole.setPermissions(104193089); // whats this?
                 send += "\nThe `@everyone` role is no longer mentionable by everyone.";
             } else {
                 send += "\nThe `@everyone` role is not mentionable.";
             }
-            if (bot.channels.find("name", "rules")) {
+            if (guild.channels.find("name", "rules")) {
                 send += "\nThere already seems to be a rules channel.";
             } else {
                 guild.createChannel('rules', {
@@ -142,7 +143,7 @@ bot.on("message", async msg => {
                     permissionOverwrites: [{
                         id: msg.guild.id,
                         deny: ['SEND_MESSAGES'],
-                    }],
+                    }], // same as welcome
                 }).then(function(ch) {
                     ch.send("Set up your rules here! A few rules to get you started:\n1. No spamming\n2. No toxicity or bigotry\n3. Don't ping entire roles, only ping mods/admins if you need them\n4. No walls of text\nGet started on your rules!");
                 });
@@ -205,7 +206,7 @@ bot.on("message", async msg => {
         } else {
             send += "\nThe `@everyone` role is not mentionable.";
         }
-        if (bot.channels.find("name", "rules")) {
+        if (guild.channels.find("name", "rules")) {
             send += "\nThere already seems to be a rules channel.";
         } else {
             send += "\nNo rules channel seems to exist.";
